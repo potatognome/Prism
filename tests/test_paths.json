@@ -1,0 +1,6 @@
+{
+    "TESTS_FOLDER": "Applications/Prism/tests",
+    "CONFIG_FOLDER": "Applications/Prism/config",
+    "SRC_FOLDER":    "Applications/Prism/src",
+    "TEST_LOGS_FOLDER": ".tests_logs/prism"
+}

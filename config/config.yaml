@@ -1,0 +1,38 @@
+# config.yaml - Prism Orchestrator Root Configuration
+# All config.d/*.yaml files are deep-merged over this in lexical order.
+
+project:
+  name: Prism
+  version: "0.1.0"
+  description: "Modular, deterministic, colour-aware data-quality orchestrator."
+
+orchestrator:
+  dry_run: false
+  run_id_prefix: "prism"
+
+modules:
+  example:
+    enabled: true
+
+logging:
+  level: INFO
+  log_files:
+    SESSION: ".logs/prism/SESSION.log"
+    MASTER:  ".logs/prism/MASTER.log"
+    RUNTIME: ".logs/prism/RUNTIME.log"
+    ERROR:   ".logs/prism/ERROR.log"
+
+colours:
+  enabled: true
+  field_types:
+    text:    "!text"
+    numeric: "!int"
+    date:    "!date"
+    path:    "!path"
+  module_actions:
+    detect:  "!proc"
+    run:     "!proc"
+    done:    "!done"
+    error:   "!error"
+    warn:    "!warn"
+    info:    "!info"

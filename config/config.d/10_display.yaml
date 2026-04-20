@@ -1,0 +1,8 @@
+# config.d/10_display.yaml - Display overrides fragment
+# This file is deep-merged over config.yaml by the orchestrator.
+# Add your display/output overrides here.
+
+display:
+  show_banner: true
+  show_module_headers: true
+  show_run_summary: true
