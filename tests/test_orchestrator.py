@@ -781,6 +781,19 @@ class TestPrismParamsModule(unittest.TestCase):
         self.assertEqual(params.get("null_threshold"), 0.05)
         self.assertEqual(params.get("encoding"), "utf-8")
 
+    def test_run_params_conform_to_expected_types(self):
+        m = self._make_module()
+        result = m.run(None)
+        params = result.dataset.get("parameters", {})
+        pipeline = result.dataset.get("pipeline", {})
+        self.assertIsInstance(params.get("null_threshold"), float)
+        self.assertIsInstance(params.get("encoding"), str)
+        self.assertIsInstance(params.get("date_output_format"), str)
+        self.assertIsInstance(params.get("date_fields"), list)
+        self.assertIsInstance(params.get("required_fields"), list)
+        self.assertIsInstance(pipeline.get("stop_on_error"), bool)
+        self.assertIsInstance(pipeline.get("verbose_changelog"), bool)
+
 
 # ===========================================================================
 # 13. Registry discovers new modules
