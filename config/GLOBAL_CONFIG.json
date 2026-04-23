@@ -6,8 +6,10 @@
     "VERSION": "0.1.0",
     "MAIN_ENTRY_POINT": "src/prism/interfaces/cli/cli.py",
     "CONFIG_FILES": {
-        "GLOBAL_CONFIG": "config/GLOBAL_CONFIG.json",
-        "PRISM_CONFIG":  "config/config.yaml"
+        "GLOBAL_CONFIG":    "config/GLOBAL_CONFIG.json",
+        "PRISM_CONFIG":     "config/config.yaml",
+        "COLOURS":          "config/GLOBAL_SHARED.d/COLOURS.json",
+        "BORDER_PATTERNS":  "config/GLOBAL_SHARED.d/BORDER_PATTERNS.json"
     },
     "LOG_FILES": {
         "SESSION": ".logs/prism/SESSION.log",

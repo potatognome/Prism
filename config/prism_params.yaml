@@ -1,0 +1,31 @@
+# config/prism_params.yaml - Secondary Prism Pipeline Parameters
+#
+# This file is loaded by the prism_params module.  It provides operator-level
+# tunables that are intentionally kept separate from the orchestrator config.
+# All values here can be overridden by placing a fragment in config/config.d/.
+
+parameters:
+  # Maximum fraction of null values allowed in any single column (0.0–1.0).
+  null_threshold: 0.10
+
+  # Default output format for date normalisation (used by date_fixer module).
+  date_output_format: "%Y-%m-%d"
+
+  # Default file encoding assumed for CSV and text inputs.
+  encoding: "utf-8"
+
+  # Optional list of column names always treated as date fields.
+  date_fields: []
+
+  # Optional list of column names that must be present in every input row.
+  required_fields: []
+
+pipeline:
+  # Stop the pipeline on the first module error.
+  stop_on_error: false
+
+  # Maximum number of rows to process (null = no limit).
+  max_rows: null
+
+  # When true, emit a per-row change log to the run summary.
+  verbose_changelog: false
