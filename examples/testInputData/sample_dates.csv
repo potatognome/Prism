@@ -1,0 +1,9 @@
+id,name,signup_date,last_login,notes
+1,Alice,2024-01-15,2024-03-20,Regular user
+2,Bob,15/02/2024,20/03/2024,Imported from legacy system
+3,Carol,03-20-2024,2024-03-21,Another legacy import
+4,Dave,2024.04.01,2024-04-05,Dotted format input
+5,Eve,not-a-date,2024-04-10,Malformed date — should be skipped
+6,Frank,,2024-04-12,Empty date field
+7,Grace,2024-05-01,2024-05-15,ISO format — already correct
+8,Heidi,31/12/2023,01/01/2024,End of year entry

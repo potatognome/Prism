@@ -1,0 +1,17 @@
+# testInputData/sample_params.yaml - Example secondary params config
+
+parameters:
+  null_threshold: 0.10
+  date_output_format: "%Y-%m-%d"
+  encoding: "utf-8"
+  date_fields:
+    - signup_date
+    - last_login
+  required_fields:
+    - id
+    - name
+
+pipeline:
+  stop_on_error: false
+  max_rows: 500
+  verbose_changelog: true

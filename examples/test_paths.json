@@ -1,0 +1,11 @@
+{
+    "examples_folder": "/home/runner/work/Prism/Prism/examples",
+    "project_root": "/home/runner/work/Prism/Prism",
+    "workspace_root": "/home/runner/work/Prism",
+    "config_folder": "/home/runner/work/Prism/Prism/config",
+    "logs_folder": "/home/runner/work/Prism/.logs/Prism",
+    "test_logs_folder": "/home/runner/work/Prism/.test_logs/Prism",
+    "test_config_folder": "/home/runner/work/Prism/Prism/config",
+    "test_inputs_folder": "/home/runner/work/Prism/Prism/tests/test_data",
+    "test_outputs_folder": "/home/runner/work/Prism/.tests_data/Prism/outputs"
+}

@@ -1,0 +1,8 @@
+# testInputData/bad_params.yaml - Intentionally malformed params fixture
+# Used to test PrismParamsModule error-handling paths.
+
+parameters:
+  null_threshold: "not-a-number"
+  encoding: 12345
+
+# missing the 'pipeline' key entirely
