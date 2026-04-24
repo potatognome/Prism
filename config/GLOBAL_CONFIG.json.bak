@@ -1,4 +1,28 @@
 {
+    "PROJECT_NAME": "Prism",
+    "PROJECT_FOLDER": "Prism",
+    "PROJECT_DESCRIPTION": "Modular, deterministic, colour-aware data-quality orchestrator.",
+    "AUTHOR": "Daniel Austin <the.potato.gnome@gmail.com>",
+    "VERSION": "0.1.0",
+    "MAIN_ENTRY_POINT": "src/prism/interfaces/cli/cli.py",
+    "CONFIG_FILES": {
+        "GLOBAL_CONFIG": "config/GLOBAL_CONFIG.json",
+        "PRISM_CONFIG": "config/config.yaml"
+    },
+    "LOG_FILES": {
+        "SESSION": ".logs/prism/SESSION.log",
+        "MASTER": ".logs/prism/MASTER.log",
+        "RUNTIME": ".logs/prism/RUNTIME.log",
+        "ERROR": ".logs/prism/ERROR.log",
+        "TRY": "Prism_TRY.log",
+        "INIT": "Prism_INIT.log",
+        "FS": "Prism_FS.log",
+        "CONFIG_READ": "Prism_CONFIG_READ.log"
+    },
+    "DISPLAY": {
+        "COLOUR_ENABLED": true,
+        "LOGGING": "verbose"
+    },
     "INFO": {
         "PROJECT_FOLDER": "/Applications/Prism/",
         "PROJECT_DESCRIPTION": "{PROJECT_DESCRIPTION}",
@@ -49,16 +73,6 @@
             "TIME_STAMP_OPTIONS": ""
         }
     },
-    "LOG_FILES": {
-        "SESSION": ".logs/prism/SESSION.log",
-        "MASTER": ".logs/prism/MASTER.log",
-        "RUNTIME": ".logs/prism/RUNTIME.log",
-        "ERROR": ".logs/prism/ERROR.log",
-        "TRY": "Prism_TRY.log",
-        "INIT": "Prism_INIT.log",
-        "FS": "Prism_FS.log",
-        "CONFIG_READ": "Prism_CONFIG_READ.log"
-    },
     "LOG_CATEGORIES": {
         "default": [
             "MASTER",
@@ -104,19 +118,5 @@
             "CONFIG_READ",
             "ERROR"
         ]
-    },
-    "PROJECT_NAME": "Prism",
-    "PROJECT_FOLDER": "Prism",
-    "PROJECT_DESCRIPTION": "Modular, deterministic, colour-aware data-quality orchestrator.",
-    "AUTHOR": "Daniel Austin <the.potato.gnome@gmail.com>",
-    "VERSION": "0.1.0",
-    "MAIN_ENTRY_POINT": "src/prism/interfaces/cli/cli.py",
-    "CONFIG_FILES": {
-        "GLOBAL_CONFIG": "config/GLOBAL_CONFIG.json",
-        "PRISM_CONFIG": "config/config.yaml"
-    },
-    "DISPLAY": {
-        "COLOUR_ENABLED": true,
-        "LOGGING": "verbose"
     }
 }
