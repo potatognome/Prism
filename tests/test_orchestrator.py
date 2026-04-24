@@ -30,6 +30,7 @@ from unittest.mock import MagicMock, patch
 _TESTS_DIR  = Path(__file__).resolve().parent
 _SRC_DIR    = _TESTS_DIR.parent / "src"
 _CONFIG_DIR = _TESTS_DIR.parent / "config"
+_TEST_DATA  = _TESTS_DIR / "test_data"
 
 if str(_SRC_DIR) not in sys.path:
     sys.path.insert(0, str(_SRC_DIR))
@@ -63,6 +64,8 @@ from prism.config_manager import PrismConfig, _deep_merge  # noqa: E402
 from prism.core.registry import ModuleRegistry              # noqa: E402
 from prism.module_base import IssueReport, ModuleResult, PrismModule  # noqa: E402
 from prism.modules.example.example_module import ExampleModule  # noqa: E402
+from prism.modules.date_fixer.date_fixer_module import DateFixerModule  # noqa: E402
+from prism.modules.prism_params.prism_params_module import PrismParamsModule  # noqa: E402
 from prism.orchestrator import PrismOrchestrator            # noqa: E402
 from prism.run_summary import ModuleRecord, RunSummary      # noqa: E402
 
@@ -529,6 +532,294 @@ class TestCLI(unittest.TestCase):
         parser = _build_parser()
         args = parser.parse_args(["detect"])
         self.assertEqual(args.command, "detect")
+
+
+# ===========================================================================
+# 11. DateFixerModule
+# ===========================================================================
+
+class TestDateFixerModule(unittest.TestCase):
+
+    def _make_module(self, config=None):
+        default = {
+            "enabled": True,
+            "date_fields": ["date"],
+            "input_formats": ["%Y-%m-%d", "%d/%m/%Y", "%m/%d/%Y"],
+            "output_format": "%Y-%m-%d",
+            "auto_detect": False,
+        }
+        cfg = {**default, **(config or {})}
+        return DateFixerModule(config=cfg, logger=MagicMock())
+
+    # detect ---
+
+    def test_detect_empty_dataset_no_issues(self):
+        m = self._make_module()
+        report = m.detect([])
+        self.assertTrue(report.passed)
+
+    def test_detect_none_dataset_no_issues(self):
+        m = self._make_module()
+        report = m.detect(None)
+        self.assertTrue(report.passed)
+
+    def test_detect_already_correct_format_passes(self):
+        m = self._make_module()
+        dataset = [{"date": "2024-01-15"}, {"date": "2023-12-31"}]
+        report = m.detect(dataset)
+        self.assertTrue(report.passed)
+
+    def test_detect_wrong_format_flagged(self):
+        m = self._make_module()
+        dataset = [{"date": "15/01/2024"}]
+        report = m.detect(dataset)
+        self.assertFalse(report.passed)
+        self.assertIn("date_needs_reformat", report.counts)
+
+    def test_detect_unparseable_date_flagged(self):
+        m = self._make_module()
+        dataset = [{"date": "not-a-date"}]
+        report = m.detect(dataset)
+        self.assertFalse(report.passed)
+        self.assertIn("unparseable_date", report.counts)
+
+    def test_detect_non_string_value_flagged(self):
+        m = self._make_module()
+        dataset = [{"date": 20240115}]
+        report = m.detect(dataset)
+        self.assertFalse(report.passed)
+        self.assertIn("non_string_date", report.counts)
+
+    def test_detect_none_value_skipped(self):
+        m = self._make_module()
+        dataset = [{"date": None}]
+        report = m.detect(dataset)
+        self.assertTrue(report.passed)
+
+    def test_detect_missing_field_skipped(self):
+        m = self._make_module()
+        dataset = [{"other_col": "value"}]
+        report = m.detect(dataset)
+        self.assertTrue(report.passed)
+
+    def test_detect_does_not_mutate(self):
+        m = self._make_module()
+        dataset = [{"date": "15/01/2024"}]
+        original = dataset[0]["date"]
+        m.detect(dataset)
+        self.assertEqual(dataset[0]["date"], original)
+
+    def test_detect_no_date_fields_no_issues(self):
+        m = self._make_module(config={"date_fields": [], "auto_detect": False})
+        dataset = [{"date": "15/01/2024"}]
+        report = m.detect(dataset)
+        self.assertTrue(report.passed)
+
+    # run ---
+
+    def test_run_converts_date_to_output_format(self):
+        m = self._make_module()
+        dataset = [{"date": "15/01/2024"}]
+        result = m.run(dataset)
+        self.assertTrue(result.success)
+        self.assertEqual(dataset[0]["date"], "2024-01-15")
+
+    def test_run_mm_dd_yyyy_to_iso(self):
+        m = self._make_module()
+        dataset = [{"date": "03/20/2024"}]
+        result = m.run(dataset)
+        self.assertTrue(result.success)
+        self.assertEqual(dataset[0]["date"], "2024-03-20")
+
+    def test_run_already_correct_unchanged(self):
+        m = self._make_module()
+        dataset = [{"date": "2024-01-15"}]
+        result = m.run(dataset)
+        self.assertTrue(result.success)
+        self.assertEqual(dataset[0]["date"], "2024-01-15")
+        self.assertEqual(len(result.changelog), 0)
+
+    def test_run_unparseable_left_unchanged(self):
+        m = self._make_module()
+        dataset = [{"date": "not-a-date"}]
+        result = m.run(dataset)
+        self.assertTrue(result.success)
+        self.assertEqual(dataset[0]["date"], "not-a-date")
+        self.assertTrue(any("skipped" in e for e in result.changelog))
+
+    def test_run_none_value_unchanged(self):
+        m = self._make_module()
+        dataset = [{"date": None}]
+        result = m.run(dataset)
+        self.assertIsNone(dataset[0]["date"])
+
+    def test_run_multiple_fields(self):
+        m = self._make_module(config={"date_fields": ["start", "end"]})
+        dataset = [{"start": "15/01/2024", "end": "20/03/2024"}]
+        m.run(dataset)
+        self.assertEqual(dataset[0]["start"], "2024-01-15")
+        self.assertEqual(dataset[0]["end"], "2024-03-20")
+
+    def test_run_custom_output_format(self):
+        m = self._make_module(config={"output_format": "%d/%m/%Y"})
+        dataset = [{"date": "2024-01-15"}]
+        result = m.run(dataset)
+        self.assertTrue(result.success)
+        self.assertEqual(dataset[0]["date"], "15/01/2024")
+
+    def test_run_empty_dataset_no_error(self):
+        m = self._make_module()
+        result = m.run([])
+        self.assertTrue(result.success)
+
+    def test_run_none_dataset_no_error(self):
+        m = self._make_module()
+        result = m.run(None)
+        self.assertTrue(result.success)
+
+    def test_run_changelog_entries(self):
+        m = self._make_module()
+        dataset = [{"date": "15/01/2024"}, {"date": "20/03/2024"}]
+        result = m.run(dataset)
+        self.assertEqual(len(result.changelog), 2)
+
+    def test_auto_detect_finds_date_column(self):
+        m = self._make_module(config={
+            "date_fields": [],
+            "auto_detect": True,
+            "input_formats": ["%d/%m/%Y"],
+        })
+        dataset = [{"signup": "15/01/2024", "name": "Alice"}]
+        result = m.run(dataset)
+        self.assertTrue(result.success)
+        self.assertEqual(dataset[0]["signup"], "2024-01-15")
+
+
+# ===========================================================================
+# 12. PrismParamsModule
+# ===========================================================================
+
+class TestPrismParamsModule(unittest.TestCase):
+
+    def _make_module(self, config=None):
+        default = {
+            "enabled": True,
+            "params_file": str(_TEST_DATA / "sample_params.yaml"),
+            "required_keys": ["parameters"],
+        }
+        cfg = {**default, **(config or {})}
+        return PrismParamsModule(config=cfg, logger=MagicMock())
+
+    # detect ---
+
+    def test_detect_valid_file_passes(self):
+        m = self._make_module()
+        report = m.detect(None)
+        self.assertTrue(report.passed)
+
+    def test_detect_missing_file_reports_issue(self):
+        m = self._make_module(config={"params_file": "/nonexistent/path/params.yaml"})
+        report = m.detect(None)
+        self.assertFalse(report.passed)
+        self.assertIn("missing_params_file", report.counts)
+
+    def test_detect_required_key_present(self):
+        m = self._make_module(config={"required_keys": ["parameters", "pipeline"]})
+        report = m.detect(None)
+        self.assertTrue(report.passed)
+
+    def test_detect_missing_required_key(self):
+        m = self._make_module(config={"required_keys": ["__nonexistent_key__"]})
+        report = m.detect(None)
+        self.assertFalse(report.passed)
+        self.assertIn("missing_required_key", report.counts)
+
+    def test_detect_no_required_keys_passes(self):
+        m = self._make_module(config={"required_keys": []})
+        report = m.detect(None)
+        self.assertTrue(report.passed)
+
+    def test_detect_invalid_yaml_reports_issue(self):
+        import tempfile, os
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".yaml", delete=False
+        ) as fh:
+            fh.write(": bad: yaml: [\n")
+            tmp = fh.name
+        try:
+            m = self._make_module(config={"params_file": tmp, "required_keys": []})
+            report = m.detect(None)
+            self.assertFalse(report.passed)
+            self.assertIn("invalid_yaml", report.counts)
+        finally:
+            os.unlink(tmp)
+
+    # run ---
+
+    def test_run_loads_params_dict(self):
+        m = self._make_module()
+        result = m.run(None)
+        self.assertTrue(result.success)
+        self.assertIsInstance(result.dataset, dict)
+        self.assertIn("parameters", result.dataset)
+
+    def test_run_missing_file_failure(self):
+        m = self._make_module(config={"params_file": "/nonexistent/params.yaml"})
+        result = m.run(None)
+        self.assertFalse(result.success)
+        self.assertIsNotNone(result.error)
+
+    def test_run_changelog_entry(self):
+        m = self._make_module()
+        result = m.run(None)
+        self.assertGreater(len(result.changelog), 0)
+
+    def test_run_returns_correct_values(self):
+        m = self._make_module()
+        result = m.run(None)
+        params = result.dataset.get("parameters", {})
+        self.assertEqual(params.get("null_threshold"), 0.05)
+        self.assertEqual(params.get("encoding"), "utf-8")
+
+    def test_run_params_conform_to_expected_types(self):
+        m = self._make_module()
+        result = m.run(None)
+        params = result.dataset.get("parameters", {})
+        pipeline = result.dataset.get("pipeline", {})
+        self.assertIsInstance(params.get("null_threshold"), float)
+        self.assertIsInstance(params.get("encoding"), str)
+        self.assertIsInstance(params.get("date_output_format"), str)
+        self.assertIsInstance(params.get("date_fields"), list)
+        self.assertIsInstance(params.get("required_fields"), list)
+        self.assertIsInstance(pipeline.get("stop_on_error"), bool)
+        self.assertIsInstance(pipeline.get("verbose_changelog"), bool)
+
+
+# ===========================================================================
+# 13. Registry discovers new modules
+# ===========================================================================
+
+class TestRegistryNewModules(unittest.TestCase):
+
+    def setUp(self):
+        self.registry = ModuleRegistry()
+        self.registry.discover()
+
+    def test_discovers_date_fixer(self):
+        self.assertIn("date_fixer", self.registry.all_names())
+
+    def test_discovers_prism_params(self):
+        self.assertIn("prism_params", self.registry.all_names())
+
+    def test_date_fixer_class_is_prism_module(self):
+        cls = self.registry.get("date_fixer")
+        self.assertIsNotNone(cls)
+        self.assertTrue(issubclass(cls, PrismModule))
+
+    def test_prism_params_class_is_prism_module(self):
+        cls = self.registry.get("prism_params")
+        self.assertIsNotNone(cls)
+        self.assertTrue(issubclass(cls, PrismModule))
 
 
 # ===========================================================================

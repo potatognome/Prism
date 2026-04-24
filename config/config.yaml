@@ -14,6 +14,28 @@ modules:
   example:
     enabled: true
 
+  prism_params:
+    enabled: true
+    params_file: "config/prism_params.yaml"
+    required_keys:
+      - parameters
+
+  date_fixer:
+    enabled: false
+    date_fields: []
+    input_formats:
+      - "%Y-%m-%d"
+      - "%d/%m/%Y"
+      - "%m/%d/%Y"
+      - "%d-%m-%Y"
+      - "%Y/%m/%d"
+      - "%d.%m.%Y"
+      - "%Y.%m.%d"
+      - "%d %b %Y"
+      - "%d %B %Y"
+    output_format: "%Y-%m-%d"
+    auto_detect: false
+
 logging:
   level: INFO
   log_files:

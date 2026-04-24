@@ -112,8 +112,21 @@
     "VERSION": "0.1.0",
     "MAIN_ENTRY_POINT": "src/prism/interfaces/cli/cli.py",
     "CONFIG_FILES": {
+<<<<<<< HEAD
         "GLOBAL_CONFIG": "config/GLOBAL_CONFIG.json",
         "PRISM_CONFIG": "config/config.yaml"
+=======
+        "GLOBAL_CONFIG":    "config/GLOBAL_CONFIG.json",
+        "PRISM_CONFIG":     "config/config.yaml",
+        "COLOURS":          "config/GLOBAL_SHARED.d/COLOURS.json",
+        "BORDER_PATTERNS":  "config/GLOBAL_SHARED.d/BORDER_PATTERNS.json"
+    },
+    "LOG_FILES": {
+        "SESSION": ".logs/prism/SESSION.log",
+        "MASTER":  ".logs/prism/MASTER.log",
+        "RUNTIME": ".logs/prism/RUNTIME.log",
+        "ERROR":   ".logs/prism/ERROR.log"
+>>>>>>> 676b28dbe5a2c3b17f52dc1906a91b59396eb286
     },
     "DISPLAY": {
         "COLOUR_ENABLED": true,
