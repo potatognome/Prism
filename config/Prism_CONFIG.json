@@ -5,11 +5,12 @@
         "PROJECT_DESCRIPTION": "Modular, deterministic, colour-aware data-quality orchestrator.",
         "AUTHOR": "Daniel Austin <the.potato.gnome@gmail.com>",
         "VERSION": "0.1.0",
-        "MAIN_ENTRY_POINT": "src/prism/interfaces/cli/cli.py"
+        "MAIN_ENTRY_POINT": "src/prism/interfaces/cli/cli.py",
+        "COLOUR_FSTR": "!project"
     },
     "ROOTS": {
-        "PROJECT": "./Applications/Prism",
-        "WORKSPACE": "."
+        "PROJECT": "C:/Repository/Daniel/dev_local/Applications/Prism",
+        "WORKSPACE": "C:/Repository/Daniel/dev_local"
     },
     "ROOT_MODES": {
         "ROOT_MODES: project": "Paths are relative to the project root.",
@@ -21,7 +22,12 @@
         "TEST_CONFIG": "project",
         "TEST_LOGS": "workspace",
         "TEST_INPUTS": "project",
-        "TEST_OUTPUTS": "workspace"
+        "TEST_OUTPUTS": "workspace",
+        "LOG_PATHS": "workspace",
+        "TESTS_LOGS": "project",
+        "TESTS_CONFIG": "project",
+        "TESTS_INPUTS": "project",
+        "TESTS_OUTPUTS": "project"
     },
     "PATHS": {
         "CONFIG": "config/",
@@ -31,7 +37,12 @@
         "TEST_CONFIG": "config/",
         "TEST_LOGS": ".test_logs/Prism/",
         "TEST_INPUTS": "tests/test_data/",
-        "TEST_OUTPUTS": ".tests_data/Prism/outputs/"
+        "TEST_OUTPUTS": ".tests_data/Prism/outputs/",
+        "LOG_PATHS": ".logs/Prism/",
+        "TESTS_LOGS": ".tests_logs/Prism/",
+        "TESTS_CONFIG": "tests/",
+        "TESTS_INPUTS": ".tests_data/inputs/",
+        "TESTS_OUTPUTS": ".tests_data/outputs/"
     },
     "SHARED_CONFIG": {
         "ENABLED": true,
@@ -53,6 +64,9 @@
             "TIME_STAMP_OPTIONS": ""
         }
     },
+    "SECONDARY": {
+        "FILE": "Prism_SECONDARY.json"
+    },
     "LOG_FILES": {
         "MASTER": "Prism_MASTER.log",
         "SESSION": "Prism_SESSION.log",
@@ -61,7 +75,9 @@
         "DEBUG": "Prism_DEBUG.log",
         "WARNING": "Prism_WARNING.log",
         "INIT": "Prism_INIT.log",
-        "FS": "Prism_FS.log"
+        "FS": "Prism_FS.log",
+        "TRY": "Prism_TRY.log",
+        "CONFIG_READ": "Prism_CONFIG_READ.log"
     },
     "LOG_CATEGORIES": {
         "default": [
@@ -110,7 +126,6 @@
             "WARNING"
         ]
     },
-
     "CONFIG_FILES": {
         "GLOBAL_CONFIG": "config/Prism_CONFIG.json",
         "PRISM_CONFIG": "config/config.yaml"

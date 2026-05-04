@@ -164,6 +164,8 @@ file_system.validate_and_create_folder("output/results")
 - Use a `main()` function as the entry point.
 - Provide a menu-driven interface for user interaction.
 - See `.github/copilot-instructions.d/cli_menu_patterns.md` for detailed menu patterns.
+- For V4l1d8r-style apps, use shared menu helpers (`_display_header`, `_print_options`) and the standard icon set (`📂 ✅ 🏗️ 💾 🚪 ◀`).
+- Keep snippet tools and global toggles under a Settings menu; reserve Main menu for top-level navigation.
 
 **Argument Parsing**
 ```python
@@ -223,6 +225,7 @@ LOG_FILES = config_loader.global_config.get("LOG_FILES", {
 - Use semantic colour codes (`!info`, `!error`, `!done`, etc.).
 - Avoid plain `print()` statements in production code.
 - Always include a `!date` timestamp token in every log entry.
+- For menu/status labels with icons, keep icon semantics consistent with `cli_menu_patterns.md`.
 
 ## Import Strategy
 
